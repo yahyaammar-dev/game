@@ -115,7 +115,7 @@
         var graphics
         var destroyedplayer
         var game_over
-        var playerX = 100
+        var playerX = 120
         var playerY = 70
         var playerTween2
         var playerTween3
@@ -178,7 +178,6 @@
                 ease: 'Power2',
             });
             playButton.on('pointerup', () => onPlayButtonClick(this));
-
         }
 
 
@@ -224,11 +223,11 @@
 
 
             qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qsbg").setScale(0.15).setAlpha(0.7);
-            sidebar = scene.add.image(scene.sys.game.config.width - 130, 120, "one").setScale(0.8);
-            fullHealth = scene.add.image(scene.sys.game.config.width - 25, 135, "full_health_100").setScale(0.7);
+            sidebar = scene.add.image(scene.sys.game.config.width - 150, 120, "one").setScale(0.8);
+            fullHealth = scene.add.image(scene.sys.game.config.width - 45, 135, "full_health_100").setScale(0.7);
 
             questions = myCustomQuestions
-            rec = scene.add.image(scene.sys.game.config.width - 230, 60, "rec").setScale(0.7);
+            rec = scene.add.image(scene.sys.game.config.width - 250, 60, "rec").setScale(0.7);
             displayQuestion(scene, currentQuestionIndex)
         }
 
