@@ -18,7 +18,9 @@
             align-items: center;
             justify-content: center;
         }
-        html, body{
+
+        html,
+        body {
             overflow: hidden;
         }
     </style>
@@ -93,7 +95,7 @@
 
 
 
-        
+
         var game = new Phaser.Game(config);
         var scene = null;
         var playButton;
@@ -210,35 +212,23 @@
 
             player = scene.add.image(playerX, playerY, "happy")
 
-            let tweenConfig = {
+            tweenConfig = {
                 targets: player,
-                x: player.x + 10, // Final position of the player
-                y: player.y + 10,
-                duration: 800, // Duration of each half of the animation (in milliseconds)
-                ease: 'Linear', // Easing function
-                yoyo: true, // Makes the tween reverse back to its original state
-                repeat: -1 // -1 means it will repeat indefinitely
+                angle: player.angle + 5, // Adjust the angle for the swinging effect
+                duration: 400, // Adjust the duration for the swinging speed
+                ease: 'Sine.easeInOut', // Use a smooth easing function for a natural swing motion
+                yoyo: true,
+                repeat: -1
             };
             playerTween2 = scene.tweens.add(tweenConfig);
 
-            // graphics = scene.add.graphics();
-            // var sidebarX = scene.sys.game.config.width - 175;
-            // var sidebarY = 20;
-            // var sidebarWidth = 150;
-            // var sidebarHeight = 200;
 
             qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qsbg").setScale(0.15).setAlpha(0.7);
             sidebar = scene.add.image(scene.sys.game.config.width - 130, 120, "one").setScale(0.8);
-            fullHealth = scene.add.image(scene.sys.game.config.width - 25 , 135, "full_health_100").setScale(0.7);
+            fullHealth = scene.add.image(scene.sys.game.config.width - 25, 135, "full_health_100").setScale(0.7);
 
-            // scene.graphics = scene.add.graphics();
-            // scene.graphics.fillStyle(0xffff00, 1);
-            // scene.graphics.fillRoundedRect(170, 340, 580, 250, 32);
-            // scene.graphics.fillStyle(0xff00ff, 1);
-            // scene.graphics.setAlpha(0.3);
-            // questions = scene.cache.json.get('questions');
             questions = myCustomQuestions
-            rec = scene.add.image(scene.sys.game.config.width - 230 , 60, "rec").setScale(0.7);
+            rec = scene.add.image(scene.sys.game.config.width - 230, 60, "rec").setScale(0.7);
             displayQuestion(scene, currentQuestionIndex)
         }
 
@@ -326,20 +316,18 @@
                 duration: 1000,
                 ease: 'Power2',
                 onComplete: function () {
-                    // Reset properties after the animation is complete
                     playerTween2.stop();
-                    console.log(player.x, player.y)
 
                     tweenConfig = {
                         targets: player,
-                        x: player.x + 10, // Final position of the player
-                        y: player.y + 10,
-                        duration: 800, // Duration of each half of the animation (in milliseconds)
-                        ease: 'Linear', // Easing function
-                        yoyo: true, // Makes the tween reverse back to its original state
-                        repeat: -1 // -1 means it will repeat indefinitely
+                        angle: player.angle + 5, // Adjust the angle for the swinging effect
+                        duration: 400, // Adjust the duration for the swinging speed
+                        ease: 'Sine.easeInOut', // Use a smooth easing function for a natural swing motion
+                        yoyo: true,
+                        repeat: -1
                     };
                     playerTween2 = scene.tweens.add(tweenConfig);
+
                 }
             });
 
