@@ -84,7 +84,7 @@
 
         WebFont.load({
             google: {
-                families: ['Bungee Spice'] // Load 'Bungee Spice' font from Google Fonts
+                families: ['Bungee Spice', 'Play'] // Load 'Bungee Spice' font from Google Fonts
             },
             active: function () {
                 // Create the game instance once the font is loaded
@@ -122,6 +122,7 @@
         var cloud3
         let win
         var qbg
+        var rec
 
         function preload() {
             this.load.image('game_background', 'assets/mainbgg.png');
@@ -147,9 +148,11 @@
             this.load.image('destroyedplayer', 'assets/end.png');
             this.load.json('questions', 'data/qa.json');
             this.load.audio('backgroundMusic', ['assets/bgmusic.mp3']);
-            this.load.image('cloud', 'assets/cld.png')
+            this.load.image('cloud', 'assets/c1.png')
             this.load.image('qbg', 'assets/bgrounded.png')
             this.load.image('win', 'assets/25-8.png')
+            this.load.image('rec', 'assets/rec.png')
+            this.load.image('qsbg', 'assets/qsbg.png')
             this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js')
         }
 
@@ -184,8 +187,8 @@
             });
             playButton.destroy()
             happy.destroy()
-            cloud1 = scene.add.image(scene.sys.game.config.width / 2, 100, "cloud").setScale(0.2);
-            cloud2 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud").setScale(0.2);
+            cloud1 = scene.add.image(scene.sys.game.config.width / 2, 100, "cloud").setScale(0.2).setAlpha(0.5);
+            cloud2 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud").setScale(0.2).setAlpha(0.5);
             // cloud3 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud");
             scene.tweens.add({
                 targets: cloud1,
@@ -224,11 +227,9 @@
             // var sidebarWidth = 150;
             // var sidebarHeight = 200;
 
-            qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qbg").setScale(0.6).setAlpha(0.7);
-
-
+            qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qsbg").setScale(0.15).setAlpha(0.7);
             sidebar = scene.add.image(scene.sys.game.config.width - 130, 120, "one").setScale(0.8);
-            fullHealth = scene.add.image(scene.sys.game.config.width - 280, 125, "full_health_100");
+            fullHealth = scene.add.image(scene.sys.game.config.width - 25 , 135, "full_health_100").setScale(0.7);
 
             // scene.graphics = scene.add.graphics();
             // scene.graphics.fillStyle(0xffff00, 1);
@@ -237,7 +238,7 @@
             // scene.graphics.setAlpha(0.3);
             // questions = scene.cache.json.get('questions');
             questions = myCustomQuestions
-
+            rec = scene.add.image(scene.sys.game.config.width - 230 , 60, "rec").setScale(0.7);
             displayQuestion(scene, currentQuestionIndex)
         }
 
@@ -253,8 +254,6 @@
             element.setInteractive();
         }
 
-
-
         function displayQuestion(scene, index) {
             var question = questions[index];
             if (questionText) {
@@ -264,13 +263,13 @@
                 optionLabels[i].destroy();
             }
             optionLabels = [];
-            questionText = scene.add.text(450, 400, question.question, { fontFamily: 'Bungee Spice, sans-serif', fontSize: '28px', fill: '#000000' });
+            questionText = scene.add.text(520, 420, question.question, { fontFamily: 'Play, sans-serif', fontSize: '16px', fill: '#000000' });
             questionText.setOrigin(0.5);
 
             for (var j = 0; j < question.options.length; j++) {
-                var optionContainer = scene.add.container(300, 440 + j * 50);
+                var optionContainer = scene.add.container(380, 440 + j * 30);
                 var padding = 10;
-                var optionLabel = scene.add.text(padding, padding, question.options[j], { fontFamily: 'Bungee Spice, sans-serif', fontSize: '24px', fill: '#000000' });
+                var optionLabel = scene.add.text(padding, padding, question.options[j], { fontFamily: 'Play, sans-serif', fontSize: '14px', fill: '#000000' });
 
                 optionLabel.setOrigin(0, 0);
                 optionLabel.setInteractive();
@@ -288,19 +287,15 @@
                         label.setTint(0xff0000);
                         document.body.style.cursor = 'pointer';
                     });
-
                     label.on('pointerout', function () {
                         bg.setVisible(false);
                         label.clearTint();
                         document.body.style.cursor = 'default';
                     });
                 })(optionLabel, background);
-
                 optionLabels.push(optionContainer);
-
             }
         }
-
 
         function playHurrayAnimation(scene, optionLabel) {
             if (hurrayTween && hurrayTween.isPlaying()) {
