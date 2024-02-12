@@ -125,6 +125,9 @@
         let win
         var qbg
         var rec
+        var hearts = []
+        var problems = []
+        var border
 
         function preload() {
             this.load.image('game_background', 'assets/mainbgg.png');
@@ -140,11 +143,11 @@
             this.load.svg('unhappy_level_frame_0', 'assets2/unhappy_level_frame_0.svg');
             this.load.svg('record', 'assets2/record.svg');
             this.load.image('first', 'assets/first.png')
-            this.load.image('one', 'assets/preone.png');
-            this.load.image('two', 'assets/pretwo.png');
-            this.load.image('three', 'assets/prethree.png');
-            this.load.image('four', 'assets/prefour.png');
-            this.load.image('five', 'assets/prefive.png');
+            this.load.image('one', 'assets/preone-removebg-preview.png');
+            this.load.image('two', 'assets/pretwo-removebg-preview.png');
+            this.load.image('three', 'assets/prethree-removebg-preview.png');
+            this.load.image('four', 'assets/prefour-removebg-preview.png');
+            this.load.image('five', 'assets/prefive-removebg-preview.png');
             this.load.image('play_button', 'assets/playbutton.png');
             this.load.image('game_over', 'assets/gameover.png');
             this.load.image('destroyedplayer', 'assets/end.png');
@@ -155,6 +158,10 @@
             this.load.image('win', 'assets/25-8.png')
             this.load.image('rec', 'assets/rec.png')
             this.load.image('qsbg', 'assets/qsbg.png')
+            this.load.image('heart', 'assets/heart.png')
+            this.load.image('heartBlank', 'assets/heart-blank.png')
+            this.load.image('problem', 'assets/problem.png')
+            this.load.image('border', 'assets/borderbg.png')
             this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js')
         }
 
@@ -190,6 +197,18 @@
             happy.destroy()
             cloud1 = scene.add.image(scene.sys.game.config.width / 2, 100, "cloud").setScale(0.2).setAlpha(0.5);
             cloud2 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud").setScale(0.2).setAlpha(0.5);
+
+
+            for (let i = 0; i < 8; i++) {
+                let item = scene.add.image(scene.sys.game.config.width - 290 + i * 30, 250, "problem").setScale(0.05)
+                problems.push(item)
+            }
+
+            for (let i = 0; i < 3; i++) {
+                let item = scene.add.image(scene.sys.game.config.width - 290 + i * 30, 280, "heart").setScale(0.05)
+                hearts.push(item)
+            }
+
             // cloud3 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud");
             scene.tweens.add({
                 targets: cloud1,
@@ -223,11 +242,24 @@
 
 
             qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qsbg").setScale(0.15).setAlpha(0.7);
-            sidebar = scene.add.image(scene.sys.game.config.width - 150, 120, "one").setScale(0.8);
-            fullHealth = scene.add.image(scene.sys.game.config.width - 45, 135, "full_health_100").setScale(0.7);
+
+            sidebar = scene.add.image(scene.sys.game.config.width - 180, 130, "one").setScale(0.7);
+
+            tweenConfig = {
+                targets: sidebar,
+                angle: sidebar.angle + 1, // Adjust the angle for the swinging effect
+                duration: 400, // Adjust the duration for the swinging speed
+                ease: 'Sine.easeInOut', // Use a smooth easing function for a natural swing motion
+                yoyo: true,
+                repeat: -1
+            };
+            scene.tweens.add(tweenConfig);
+
+            fullHealth = scene.add.image(scene.sys.game.config.width - 90, 135, "full_health_100").setScale(0.7);
+            border = scene.add.image(scene.sys.game.config.width - 180, 130, "border").setScale(0.48);
 
             questions = myCustomQuestions
-            rec = scene.add.image(scene.sys.game.config.width - 250, 60, "rec").setScale(0.7);
+            rec = scene.add.image(scene.sys.game.config.width - 260, 70, "rec").setScale(0.7);
             displayQuestion(scene, currentQuestionIndex)
         }
 
@@ -304,7 +336,9 @@
                     questionText.setScale(1);
                     questionText.setAlpha(1);
                     currentQuestionIndex++;
-                    displayQuestion(scene, currentQuestionIndex)
+                    if (questions.length > currentQuestionIndex ) {
+                        displayQuestion(scene, currentQuestionIndex)
+                    }
                 }
             });
 
@@ -316,7 +350,6 @@
                 ease: 'Power2',
                 onComplete: function () {
                     playerTween2.stop();
-
                     tweenConfig = {
                         targets: player,
                         angle: player.angle + 5, // Adjust the angle for the swinging effect
@@ -326,18 +359,14 @@
                         repeat: -1
                     };
                     playerTween2 = scene.tweens.add(tweenConfig);
-
                 }
             });
-
         }
 
         function shook() {
-
             if (shookTween && shookTween.isPlaying()) {
                 shookTween.stop();
             }
-
             shookTween = scene.tweens.add({
                 targets: player,
                 x: player.x + 20,
@@ -354,6 +383,11 @@
 
         function checkAnswer(scene, question, selectedOptionIndex, optionLabel) {
             if (selectedOptionIndex === question.correctOptionIndex) {
+
+                let last = problems.slice(-1)
+                last[0].destroy()
+                problems.pop()
+
                 playerX += 50
                 playerY += 100
                 playHurrayAnimation(scene, optionLabel)
@@ -367,11 +401,52 @@
                     optionLabels = [];
                     player.destroy()
 
-                    win = scene.add.image(450, 400, 'win').setScale(0.5);
+                    sidebar.destroy()
+                    fullHealth.destroy()
+                    border.destroy()
+                    rec.destroy()
+
+
+                    for (const i of problems) {
+                        i.destroy()
+                    }
+                    problems = []
+
+                    for (const i of hearts) {
+                        i.destroy()
+                    }
+                    hearts = []
+
+                    happy = this.add.image(this.sys.game.config.width / 2, 250, "happy")
+                    happy.setDisplaySize(600, 600);
+                    happy.setScale(0.1);
+                    this.tweens.add({
+                        targets: happy,
+                        x: this.sys.game.config.width / 2,
+                        y: 900,
+                        scaleX: 1,
+                        scaleY: 1,
+                        displayWidth: happy.displayWidth * 20,
+                        displayHeight: happy.displayHeight * 20,
+                        duration: 3000,
+                        ease: 'Power2',
+                        onComplete: function () {
+                            console.log("Completed")
+                            win = scene.add.image(450, 400, 'win').setScale(0.5);
+                        }
+                    });
+
+
                     // destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
                 }
 
             } else {
+
+
+                let last = hearts.slice(-1)
+                last[0].destroy()
+                hearts.pop()
+
                 if (sidebar.texture.key == 'one') {
                     sidebar.setTexture('two');
                     fullHealth.setTexture('full_health_75')
@@ -380,12 +455,13 @@
                     sidebar.setTexture('three');
                     fullHealth.setTexture('full_health_50')
                     shook()
-                } else if (sidebar.texture.key == 'three') {
-                    sidebar.setTexture('four');
-                    fullHealth.setTexture('full_health_25')
-                    shook()
                 }
-                else if (sidebar.texture.key == 'four') {
+                // else if (sidebar.texture.key == 'three') {
+                //     sidebar.setTexture('four');
+                //     fullHealth.setTexture('full_health_25')
+                //     shook()
+                // }
+                else if (sidebar.texture.key == 'three') {
                     sidebar.setTexture('five');
                     fullHealth.setTexture('full_health_0')
                     qbg.destroy()
