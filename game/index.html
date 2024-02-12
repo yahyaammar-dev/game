@@ -38,7 +38,36 @@
 
 
 
-     <script>
+    <script>
+
+        var myCustomQuestions
+
+        fetch('https://fetv2022.netservex.com/api/v1/games/ete-2009-souvenirs-de-mon-sejour-linguistique-imparfait-passe')
+            .then((res) => {
+                res.json().then((rese) => {
+
+                    let arr = rese.data[0].game.questions
+
+                    let convertedArr = arr.map(questionObj => {
+                        let options = questionObj.answer_list.map(answer => answer.answer);
+                        let correctOptionIndex = questionObj.answer_list.findIndex(answer => answer.correct_answer === 1);
+
+                        return {
+                            question: questionObj.question,
+                            options: options,
+                            correctOptionIndex: correctOptionIndex
+                        };
+                    });
+
+                    myCustomQuestions = convertedArr
+
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+
         var config = {
             type: Phaser.AUTO,
             width: 900,
@@ -54,14 +83,14 @@
             google: {
                 families: ['Bungee Spice'] // Load 'Bungee Spice' font from Google Fonts
             },
-            active: function() {
+            active: function () {
                 // Create the game instance once the font is loaded
             }
         });
 
 
 
-
+        
         var game = new Phaser.Game(config);
         var scene = null;
         var playButton;
@@ -88,7 +117,7 @@
         var cloud1
         var cloud2
         var cloud3
-        let win 
+        let win
         var qbg
 
         function preload() {
@@ -114,7 +143,7 @@
             this.load.image('game_over', 'assets/gameover.png');
             this.load.image('destroyedplayer', 'assets/end.png');
             this.load.json('questions', 'data/qa.json');
-            this.load.audio('backgroundMusic', ['assets/background_music.mp3']);
+            this.load.audio('backgroundMusic', ['assets/bgmusic.mp3']);
             this.load.image('cloud', 'assets/cld.png')
             this.load.image('qbg', 'assets/bgrounded.png')
             this.load.image('win', 'assets/25-8.png')
@@ -203,7 +232,9 @@
             // scene.graphics.fillRoundedRect(170, 340, 580, 250, 32);
             // scene.graphics.fillStyle(0xff00ff, 1);
             // scene.graphics.setAlpha(0.3);
-            questions = scene.cache.json.get('questions');
+            // questions = scene.cache.json.get('questions');
+            questions = myCustomQuestions
+
             displayQuestion(scene, currentQuestionIndex)
         }
 
@@ -324,11 +355,11 @@
 
             shookTween = scene.tweens.add({
                 targets: player,
-                x: player.x + 20, 
-                y: player.y + 20, 
-                duration: 100, 
+                x: player.x + 20,
+                y: player.y + 20,
+                duration: 100,
                 ease: 'Power2',
-                yoyo: true, 
+                yoyo: true,
                 repeat: 1,
                 onComplete: function () {
                     console.log("Shook animation completed");
@@ -342,7 +373,7 @@
                 playerY += 100
                 playHurrayAnimation(scene, optionLabel)
 
-                if(questions.length == currentQuestionIndex+1){
+                if (questions.length == currentQuestionIndex + 1) {
                     qbg.destroy()
                     questionText.destroy()
                     for (var i = 0; i < optionLabels.length; i++) {
@@ -385,7 +416,7 @@
                 }
             }
         }
-    </script> 
+    </script>
 </body>
 
 </html>
