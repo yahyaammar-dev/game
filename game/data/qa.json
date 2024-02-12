@@ -1,0 +1,27 @@
+[
+    {
+        "question": "Capital of France?",
+        "options": ["Paris", "London", "Berlin"],
+        "correctOptionIndex": 0
+    },
+    {
+        "question": "Red Planet?",
+        "options": ["Mars", "Venus", "Jupiter"],
+        "correctOptionIndex": 0
+    },
+    {
+        "question": "Chemical symbol for water?",
+        "options": ["H2O", "CO2", "NaCl"],
+        "correctOptionIndex": 0
+    },
+    {
+        "question": "Writer of 'Romeo and Juliet'?",
+        "options": ["William Shakespeare", "Jane Austen", "Charles Dickens"],
+        "correctOptionIndex": 0
+    },
+    {
+        "question": "Tallest mammal?",
+        "options": ["Elephant", "Giraffe", "Lion"],
+        "correctOptionIndex": 1
+    }
+]

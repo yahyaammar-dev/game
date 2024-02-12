@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Game One</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        var config = {
+            type: Phaser.AUTO,
+            width: 900,
+            height: 800,
+            backgroundColor: '#ffffff',
+            scene: {
+                preload,
+                create
+            },
+        };
+
+        var game = new Phaser.Game(config);
+        var scene = null;
+        var playButton;
+        var happy;
+        function preload() {
+            this.load.image('game_background', 'assets/bg.png');
+            this.load.svg('full_health_0', 'assets/full_health_0.svg');
+            this.load.svg('full_health_25', 'assets/full_health_25.svg');
+            this.load.svg('full_health_50', 'assets/full_health_50.svg');
+            this.load.svg('full_health_75', 'assets/full_health_75.svg');
+            this.load.svg('full_health_100', 'assets/full_health_100.svg');
+            this.load.svg('happy', 'assets/happy.svg');
+            this.load.svg('happy_level_1', 'assets/happy_level_1.svg');
+            this.load.svg('happy_level_frame_1', 'assets/happy_level_frame_1.svg');
+            this.load.svg('unhappy_level_0', 'assets/unhappy_level_0.svg');
+            this.load.svg('unhappy_level_frame_0', 'assets/unhappy_level_frame_0.svg');
+            this.load.svg('play_button', 'assets/play_button.svg');
+            this.load.svg('record', 'assets/record.svg');
+        }
+
+        function create() {
+            scene = this;
+            setBackgroundImage();
+            
+            playButton = this.add.image(this.sys.game.config.width / 2, 200, "play_button");
+            setInteractions(playButton)
+
+            happy = this.add.image(this.sys.game.config.width / 2, 250, "happy")
+            happy.setDisplaySize(600, 600);
+            happy.setScale(0.1);
+            this.tweens.add({
+                targets: happy,
+                x: this.sys.game.config.width / 2,
+                y: 550,
+                scaleX: 1,
+                scaleY: 1,
+                displayWidth: happy.displayWidth * 20,
+                displayHeight: happy.displayHeight * 20,
+                duration: 3000,
+                ease: 'Power2',
+            });
+
+        }
+        function setBackgroundImage() {
+            var backgroundImage = scene.add.image(0, 0, 'game_background');
+            backgroundImage.setDisplaySize(scene.sys.game.config.width, scene.sys.game.config.height);
+            backgroundImage.setOrigin(0, 0);
+        }
+        function displayQuestions() {
+
+        }
+        function setInteractions(element) {
+            element.setInteractive();
+
+        }
+    </script>
+</body>
+
+</html>

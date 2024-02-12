@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Game One</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
+    <link rel="preconnect"
+              href="https://fonts.googleapis.com">
+    <link rel="preconnect"
+              href="https://fonts.gstatic.com"
+              crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap"
+              rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+
+
+</head>
+
+<body>
+
+
+
+     <script>
+        var config = {
+            type: Phaser.AUTO,
+            width: 900,
+            height: window.innerHeight,
+            scene: {
+                preload: preload,
+                create: create
+                // update: update
+            }
+        };
+
+        WebFont.load({
+            google: {
+                families: ['Bungee Spice'] // Load 'Bungee Spice' font from Google Fonts
+            },
+            active: function() {
+                // Create the game instance once the font is loaded
+            }
+        });
+
+
+
+
+        var game = new Phaser.Game(config);
+        var scene = null;
+        var playButton;
+        var happy;
+        var backgroundImage;
+        var sidebar;
+        var health
+        var bg, playButton, trainn;
+        var questions;
+        var currentQuestionIndex = 0;
+        var questionText;
+        var optionLabels = [];
+        var hurrayTween;
+        var shookTween
+        var player
+        var playerTween
+        var graphics
+        var destroyedplayer
+        var game_over
+        var playerX = 100
+        var playerY = 70
+        var playerTween2
+        var playerTween3
+        var cloud1
+        var cloud2
+        var cloud3
+        let win 
+        var qbg
+
+        function preload() {
+            this.load.image('game_background', 'assets/mainbgg.png');
+            this.load.svg('full_health_0', 'assets2/full_health_0.svg');
+            this.load.svg('full_health_25', 'assets2/full_health_25.svg');
+            this.load.svg('full_health_50', 'assets2/full_health_50.svg');
+            this.load.svg('full_health_75', 'assets2/full_health_75.svg');
+            this.load.svg('full_health_100', 'assets2/full_health_100.svg');
+            this.load.image('happy', 'assets/mainchar.png');
+            this.load.svg('happy_level_1', 'assets2/happy_level_1.svg');
+            this.load.svg('happy_level_frame_1', 'assets2/happy_level_frame_1.svg');
+            this.load.svg('unhappy_level_0', 'assets2/unhappy_level_0.svg');
+            this.load.svg('unhappy_level_frame_0', 'assets2/unhappy_level_frame_0.svg');
+            this.load.svg('record', 'assets2/record.svg');
+            this.load.image('first', 'assets/first.png')
+            this.load.image('one', 'assets/preone.png');
+            this.load.image('two', 'assets/pretwo.png');
+            this.load.image('three', 'assets/prethree.png');
+            this.load.image('four', 'assets/prefour.png');
+            this.load.image('five', 'assets/prefive.png');
+            this.load.image('play_button', 'assets/playbutton.png');
+            this.load.image('game_over', 'assets/gameover.png');
+            this.load.image('destroyedplayer', 'assets/end.png');
+            this.load.json('questions', 'data/qa.json');
+            this.load.audio('backgroundMusic', ['assets/background_music.mp3']);
+            this.load.image('cloud', 'assets/cld.png')
+            this.load.image('qbg', 'assets/bgrounded.png')
+            this.load.image('win', 'assets/25-8.png')
+            this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js')
+        }
+
+        function create() {
+            scene = this;
+            setBackgroundImage();
+            playButton = this.add.image(this.sys.game.config.width / 2, 200, "play_button");
+            setInteractions(playButton)
+            happy = this.add.image(this.sys.game.config.width / 2, 250, "happy")
+            happy.setDisplaySize(600, 600);
+            happy.setScale(0.1);
+            this.tweens.add({
+                targets: happy,
+                x: this.sys.game.config.width / 2,
+                y: 550,
+                scaleX: 1,
+                scaleY: 1,
+                displayWidth: happy.displayWidth * 20,
+                displayHeight: happy.displayHeight * 20,
+                duration: 3000,
+                ease: 'Power2',
+            });
+            playButton.on('pointerup', () => onPlayButtonClick(this));
+
+        }
+
+
+        function onPlayButtonClick(scene) {
+            var music = scene.sound.add('backgroundMusic');
+            music.play({
+                loop: true
+            });
+            playButton.destroy()
+            happy.destroy()
+            cloud1 = scene.add.image(scene.sys.game.config.width / 2, 100, "cloud").setScale(0.2);
+            cloud2 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud").setScale(0.2);
+            // cloud3 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud");
+            scene.tweens.add({
+                targets: cloud1,
+                x: cloud1.x + 350,
+                duration: 5000,
+                ease: 'Linear',
+                yoyo: true, // Makes the tween reverse back to its original state
+                repeat: -1
+            });
+
+            scene.tweens.add({
+                targets: cloud2,
+                x: cloud2.x - 350,
+                duration: 5000,
+                ease: 'Linear',
+                yoyo: true, // Makes the tween reverse back to its original state
+                repeat: -1
+            });
+
+            player = scene.add.image(playerX, playerY, "happy")
+
+            let tweenConfig = {
+                targets: player,
+                x: player.x + 10, // Final position of the player
+                y: player.y + 10,
+                duration: 800, // Duration of each half of the animation (in milliseconds)
+                ease: 'Linear', // Easing function
+                yoyo: true, // Makes the tween reverse back to its original state
+                repeat: -1 // -1 means it will repeat indefinitely
+            };
+            playerTween2 = scene.tweens.add(tweenConfig);
+
+            // graphics = scene.add.graphics();
+            // var sidebarX = scene.sys.game.config.width - 175;
+            // var sidebarY = 20;
+            // var sidebarWidth = 150;
+            // var sidebarHeight = 200;
+
+            qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qbg").setScale(0.6).setAlpha(0.7);
+
+
+            sidebar = scene.add.image(scene.sys.game.config.width - 130, 120, "one").setScale(0.8);
+            fullHealth = scene.add.image(scene.sys.game.config.width - 280, 125, "full_health_100");
+
+            // scene.graphics = scene.add.graphics();
+            // scene.graphics.fillStyle(0xffff00, 1);
+            // scene.graphics.fillRoundedRect(170, 340, 580, 250, 32);
+            // scene.graphics.fillStyle(0xff00ff, 1);
+            // scene.graphics.setAlpha(0.3);
+            questions = scene.cache.json.get('questions');
+            displayQuestion(scene, currentQuestionIndex)
+        }
+
+        function setBackgroundImage() {
+            backgroundImage = scene.add.image(0, 0, 'game_background');
+            backgroundImage.setDisplaySize(scene.sys.game.config.width, scene.sys.game.config.height);
+            backgroundImage.setOrigin(0, 0);
+        }
+        function displayQuestions() {
+
+        }
+        function setInteractions(element) {
+            element.setInteractive();
+        }
+
+
+
+        function displayQuestion(scene, index) {
+            var question = questions[index];
+            if (questionText) {
+                questionText.destroy();
+            }
+            for (var i = 0; i < optionLabels.length; i++) {
+                optionLabels[i].destroy();
+            }
+            optionLabels = [];
+            questionText = scene.add.text(450, 400, question.question, { fontFamily: 'Bungee Spice, sans-serif', fontSize: '28px', fill: '#000000' });
+            questionText.setOrigin(0.5);
+
+            for (var j = 0; j < question.options.length; j++) {
+                var optionContainer = scene.add.container(300, 440 + j * 50);
+                var padding = 10;
+                var optionLabel = scene.add.text(padding, padding, question.options[j], { fontFamily: 'Bungee Spice, sans-serif', fontSize: '24px', fill: '#000000' });
+
+                optionLabel.setOrigin(0, 0);
+                optionLabel.setInteractive();
+                var background = scene.add.rectangle(0, 0, optionLabel.width + 2 * padding, optionLabel.height + 2 * padding, 0xc4f7ff);
+                background.setOrigin(0, 0);
+                background.setVisible(false);
+                optionContainer.add([background, optionLabel]);
+                optionContainer.x -= padding;
+                optionContainer.y -= padding;
+                optionLabel.on('pointerdown', checkAnswer.bind(scene, scene, question, j, optionLabel));
+
+                (function (label, bg) {
+                    label.on('pointerover', function () {
+                        bg.setVisible(true);
+                        label.setTint(0xff0000);
+                        document.body.style.cursor = 'pointer';
+                    });
+
+                    label.on('pointerout', function () {
+                        bg.setVisible(false);
+                        label.clearTint();
+                        document.body.style.cursor = 'default';
+                    });
+                })(optionLabel, background);
+
+                optionLabels.push(optionContainer);
+
+            }
+        }
+
+
+        function playHurrayAnimation(scene, optionLabel) {
+            if (hurrayTween && hurrayTween.isPlaying()) {
+                hurrayTween.stop();
+            }
+
+            // Adjust properties and duration based on your preferences
+            hurrayTween = scene.tweens.add({
+                targets: optionLabel,
+                scaleX: 1.5,
+                scaleY: 1.5,
+                alpha: 0,
+                duration: 1000,
+                ease: 'Power2',
+                onComplete: function () {
+                    // Reset properties after the animation is complete
+                    questionText.setScale(1);
+                    questionText.setAlpha(1);
+                    currentQuestionIndex++;
+                    displayQuestion(scene, currentQuestionIndex)
+                }
+            });
+
+            playerTween = scene.tweens.add({
+                targets: player,
+                x: '+=50', // Adjust this value as needed to move the element horizontally
+                y: '+=100', // Adjust this value as needed to move the element vertically
+                duration: 1000,
+                ease: 'Power2',
+                onComplete: function () {
+                    // Reset properties after the animation is complete
+                    playerTween2.stop();
+                    console.log(player.x, player.y)
+
+                    tweenConfig = {
+                        targets: player,
+                        x: player.x + 10, // Final position of the player
+                        y: player.y + 10,
+                        duration: 800, // Duration of each half of the animation (in milliseconds)
+                        ease: 'Linear', // Easing function
+                        yoyo: true, // Makes the tween reverse back to its original state
+                        repeat: -1 // -1 means it will repeat indefinitely
+                    };
+                    playerTween2 = scene.tweens.add(tweenConfig);
+                }
+            });
+
+        }
+
+        function shook() {
+
+            if (shookTween && shookTween.isPlaying()) {
+                shookTween.stop();
+            }
+
+            shookTween = scene.tweens.add({
+                targets: player,
+                x: player.x + 20, 
+                y: player.y + 20, 
+                duration: 100, 
+                ease: 'Power2',
+                yoyo: true, 
+                repeat: 1,
+                onComplete: function () {
+                    console.log("Shook animation completed");
+                }
+            });
+        }
+
+        function checkAnswer(scene, question, selectedOptionIndex, optionLabel) {
+            if (selectedOptionIndex === question.correctOptionIndex) {
+                playerX += 50
+                playerY += 100
+                playHurrayAnimation(scene, optionLabel)
+
+                if(questions.length == currentQuestionIndex+1){
+                    qbg.destroy()
+                    questionText.destroy()
+                    for (var i = 0; i < optionLabels.length; i++) {
+                        optionLabels[i].destroy();
+                    }
+                    optionLabels = [];
+                    player.destroy()
+
+                    win = scene.add.image(450, 400, 'win').setScale(0.5);
+                    // destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
+                }
+
+            } else {
+                if (sidebar.texture.key == 'one') {
+                    sidebar.setTexture('two');
+                    fullHealth.setTexture('full_health_75')
+                    shook()
+                } else if (sidebar.texture.key == 'two') {
+                    sidebar.setTexture('three');
+                    fullHealth.setTexture('full_health_50')
+                    shook()
+                } else if (sidebar.texture.key == 'three') {
+                    sidebar.setTexture('four');
+                    fullHealth.setTexture('full_health_25')
+                    shook()
+                }
+                else if (sidebar.texture.key == 'four') {
+                    sidebar.setTexture('five');
+                    fullHealth.setTexture('full_health_0')
+                    qbg.destroy()
+                    questionText.destroy()
+                    for (var i = 0; i < optionLabels.length; i++) {
+                        optionLabels[i].destroy();
+                    }
+                    optionLabels = [];
+                    player.destroy()
+
+                    game_over = scene.add.image(450, 400, "game_over").setScale(0.5)
+                    destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
+                }
+            }
+        }
+    </script> 
+</body>
+
+</html>
