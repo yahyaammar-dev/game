@@ -33,25 +33,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap"
               rel="stylesheet">
     <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
-
 
 </head>
 
 <body>
-
-
-
     <script>
-
-
         function Game() {
-
-
-
             var myCustomQuestions
-
             var currentUrl = window.location.href;
             var urlParams = new URLSearchParams(currentUrl.split('?')[1]);
             var urlParameterValue = urlParams.get('url');
@@ -133,7 +122,7 @@
             var hearts = []
             var problems = []
             var border
-            var right
+            var right = []
             var wrong = []
             var rightAnswerSound
             var wrongAnswerSound
@@ -142,6 +131,9 @@
             var mutex
             var music
             var reset
+            var question
+            var optionContainer
+            var optionLabel
 
             function preload() {
                 this.load.image('game_background', 'assets/mainbgg.png');
@@ -198,7 +190,6 @@
                 }
             }
 
-
             function resetGame() {
                 window.location.reload()
             }
@@ -225,6 +216,9 @@
                 playButton.on('pointerup', () => onPlayButtonClick(this));
                 rightAnswerSound = scene.sound.add('rightAnswer')
                 wrongAnswerSound = scene.sound.add('wrongAnswer')
+                if (reset) {
+                    reset.destroy()
+                }
             }
 
 
@@ -237,10 +231,6 @@
                 happy.destroy()
                 cloud1 = scene.add.image(scene.sys.game.config.width / 2, 100, "cloud").setScale(0.2).setAlpha(0.5);
                 cloud2 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud").setScale(0.2).setAlpha(0.5);
-
-                reset = scene.add.image(scene.sys.game.config.width - 100, scene.sys.game.config.height - 100, "reset").setInteractive()
-
-                reset.on('pointerup', () => resetGame());
 
                 speakx = scene.add.image(100, scene.sys.game.config.height - 100, "speak").setScale(0.1).setInteractive()
                 mutex = scene.add.image(100, scene.sys.game.config.height - 100, "mute").setScale(0.1).setInteractive()
@@ -320,8 +310,13 @@
                 element.setInteractive();
             }
 
+            function checkRightAnswer(scene){
+                let myCont = optionLabels[question.correctOptionIndex]
+                right.push(scene.add.image(myCont.x - 8, myCont.y + 20, "right").setScale(0.04))
+            }
+
             function displayQuestion(scene, index) {
-                var question = questions[index];
+                question = questions[index];
                 if (questionText) {
                     questionText.destroy();
                 }
@@ -333,9 +328,9 @@
                 questionText.setOrigin(0.5);
 
                 for (var j = 0; j < question.options.length; j++) {
-                    var optionContainer = scene.add.container(380, 440 + j * 30);
+                    optionContainer = scene.add.container(380, 440 + j * 30);
                     var padding = 10;
-                    var optionLabel = scene.add.text(padding, padding, question.options[j], { fontFamily: 'Play, sans-serif', fontSize: '14px', fill: '#000000' });
+                    optionLabel = scene.add.text(padding, padding, question.options[j], { fontFamily: 'Play, sans-serif', fontSize: '14px', fill: '#000000' });
 
                     optionLabel.setOrigin(0, 0);
                     optionLabel.setInteractive();
@@ -390,7 +385,6 @@
                 if (hurrayTween && hurrayTween.isPlaying()) {
                     hurrayTween.stop();
                 }
-
                 // Adjust properties and duration based on your preferences
                 hurrayTween = scene.tweens.add({
                     targets: optionLabel,
@@ -407,7 +401,10 @@
                         if (questions.length > currentQuestionIndex) {
                             displayQuestion(scene, currentQuestionIndex)
                         }
-                        right.destroy()
+                        for(i of right){
+                            i.destroy()
+                        }
+                        i = []
                     }
                 });
 
@@ -449,28 +446,29 @@
                     }
                 });
             }
-
+            
             function checkAnswer(scene, question, selectedOptionIndex, optionLabel, optionContainer) {
                 if (selectedOptionIndex === question.correctOptionIndex) {
                     if (speak) {
                         rightAnswerSound.play()
                     }
-
                     for (const i of wrong) {
                         i.destroy()
                     }
                     wrong = []
 
-                    right = scene.add.image(optionContainer.x - 8, optionContainer.y + 20, "right").setScale(0.04)
+                    for (const i of right) {
+                        i.destroy()
+                    }
+                    right = []
 
+                    right.push(scene.add.image(optionContainer.x - 8, optionContainer.y + 20, "right").setScale(0.04))
                     let last = problems.slice(-1)
                     last[0].destroy()
                     problems.pop()
-
                     playerX += 50
                     playerY += 100
                     playHurrayAnimation(scene, optionLabel)
-
                     if (questions.length == currentQuestionIndex + 1) {
                         qbg.destroy()
                         questionText.destroy()
@@ -479,34 +477,27 @@
                         }
                         optionLabels = [];
                         player.destroy()
-
                         sidebar.destroy()
                         fullHealth.destroy()
                         border.destroy()
                         rec.destroy()
-
-
                         for (const i of problems) {
                             i.destroy()
                         }
                         problems = []
-
                         for (const i of hearts) {
                             i.destroy()
                         }
-
-
                         for (const i of wrong) {
                             i.destroy()
                         }
-
                         wrong = []
-
-                        right.destroy()
-
+                        
+                        for(i of right){
+                            i.destroy()
+                        }
 
                         hearts = []
-
                         happy = this.add.image(this.sys.game.config.width / 2, 250, "happy")
                         happy.setDisplaySize(600, 600);
                         happy.setScale(0.1);
@@ -521,39 +512,31 @@
                             duration: 3000,
                             ease: 'Power2',
                             onComplete: function () {
-                                console.log("Completed")
                                 win = scene.add.image(450, 400, 'win').setScale(0.5);
                             }
                         });
-
+                        reset = scene.add.image(scene.sys.game.config.width - 100, scene.sys.game.config.height - 100, "reset").setInteractive()
+                        reset.on('pointerup', () => resetGame());
                         // destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
                     }
-
                 } else {
-
+                    checkRightAnswer(scene)
                     if (speak) {
                         wrongAnswerSound.play()
                     }
-
-
                     let last = hearts.slice(-1)
                     last[0].destroy()
                     hearts.pop()
-
                     wrong.push(scene.add.image(optionContainer.x - 8, optionContainer.y + 20, "wrong").setScale(0.04))
-
-
                     if (sidebar.texture.key == 'one') {
                         sidebar.setTexture('two');
                         fullHealth.setTexture('full_health_75')
                         shook()
-                    } else if (sidebar.texture.key == 'two') {
+                    }else if (sidebar.texture.key == 'two') {
                         sidebar.setTexture('three');
                         fullHealth.setTexture('full_health_50')
                         shook()
-                    }
-
-                    else if (sidebar.texture.key == 'three') {
+                    }else if (sidebar.texture.key == 'three') {
                         scene.tweens.add({
                             targets: player,
                             x: 500,
@@ -561,9 +544,7 @@
                             duration: 1000,
                             ease: 'Power1',
                             onComplete: function () {
-                                console.log("Completed")
                                 player.destroy()
-
                                 sidebar.setTexture('five');
                                 fullHealth.setTexture('full_health_0')
                                 qbg.destroy()
@@ -572,44 +553,37 @@
                                     optionLabels[i].destroy();
                                 }
                                 optionLabels = [];
-
-
                                 sidebar.destroy()
                                 fullHealth.destroy()
                                 border.destroy()
                                 rec.destroy()
-
                                 for (const i of problems) {
                                     i.destroy()
                                 }
                                 problems = []
-
                                 for (const i of wrong) {
                                     i.destroy()
                                 }
-
                                 wrong = []
-
                                 if (right) {
-                                    right.destroy()
+                                    for(i of right){
+                                        i.destroy()
+                                    }
+                                    right = []
                                 }
-
                                 game_over = scene.add.image(450, 400, "game_over").setScale(0.5)
                                 destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
+                                reset = scene.add.image(scene.sys.game.config.width - 100, scene.sys.game.config.height - 100, "reset").setInteractive()
+                                reset.on('pointerup', () => resetGame());
                             }
                         });
-
-
                     }
                 }
             }
         }
 
-
         Game()
-
 
     </script>
 </body>
-
 </html>
