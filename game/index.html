@@ -76,7 +76,6 @@
                     console.log(err)
                 })
 
-
             var config = {
                 type: Phaser.AUTO,
                 width: 900,
@@ -96,9 +95,6 @@
                     // Create the game instance once the font is loaded
                 }
             });
-
-
-
 
             var game = new Phaser.Game(config);
             var scene = null;
@@ -173,7 +169,7 @@
                 this.load.image('win', 'assets/25-8.png')
                 this.load.image('rec', 'assets/rec.png')
                 this.load.image('qsbg', 'assets/qsbg.png')
-                this.load.image('heart', 'assets/heart.png')
+                this.load.image('heart', 'assets/heartx.png')
                 this.load.image('heartBlank', 'assets/heart-blank.png')
                 this.load.image('problem', 'assets/problem.png')
                 this.load.image('border', 'assets/borderbg.png')
@@ -251,22 +247,21 @@
                 mutex.setVisible(false)
 
                 for (let i = 0; i < 8; i++) {
-                    let item = scene.add.image(scene.sys.game.config.width - 290 + i * 30, 250, "problem").setScale(0.05)
+                    let item = scene.add.image(scene.sys.game.config.width - 285 + i * 30, 250, "problem")
                     problems.push(item)
                 }
 
                 for (let i = 0; i < 3; i++) {
-                    let item = scene.add.image(scene.sys.game.config.width - 290 + i * 30, 280, "heart").setScale(0.05)
+                    let item = scene.add.image(scene.sys.game.config.width - 290 + i * 30, 280, "heart").setScale(0.9)
                     hearts.push(item)
                 }
 
-                // cloud3 = scene.add.image(scene.sys.game.config.width / 2, 200, "cloud");
                 scene.tweens.add({
                     targets: cloud1,
                     x: cloud1.x + 350,
                     duration: 5000,
                     ease: 'Linear',
-                    yoyo: true, // Makes the tween reverse back to its original state
+                    yoyo: true,
                     repeat: -1
                 });
 
@@ -275,7 +270,7 @@
                     x: cloud2.x - 350,
                     duration: 5000,
                     ease: 'Linear',
-                    yoyo: true, // Makes the tween reverse back to its original state
+                    yoyo: true,
                     repeat: -1
                 });
 
@@ -290,11 +285,10 @@
                     repeat: -1
                 };
                 playerTween2 = scene.tweens.add(tweenConfig);
-
                 qbg = scene.add.image(scene.sys.game.config.width - 440, 480, "qsbg").setScale(0.15).setAlpha(0.7);
-
-                sidebar = scene.add.image(scene.sys.game.config.width - 180, 130, "one").setScale(0.7);
-
+                sidebar = scene.add.image(scene.sys.game.config.width - 180, 125, "one").setScale(0.7);
+                sidebar.displayHeight = 180
+                sidebar.displayWidth = 250
                 tweenConfig = {
                     targets: sidebar,
                     angle: sidebar.angle + 1,
@@ -304,10 +298,8 @@
                     repeat: -1
                 };
                 scene.tweens.add(tweenConfig);
-
                 fullHealth = scene.add.image(scene.sys.game.config.width - 90, 135, "full_health_100").setScale(0.7);
                 border = scene.add.image(scene.sys.game.config.width - 180, 130, "border").setScale(0.48);
-
                 questions = myCustomQuestions
                 rec = scene.add.image(scene.sys.game.config.width - 260, 70, "rec").setScale(0.7);
                 displayQuestion(scene, currentQuestionIndex)
@@ -518,7 +510,7 @@
                         this.tweens.add({
                             targets: happy,
                             x: this.sys.game.config.width / 2,
-                            y: 900,
+                            y: 500,
                             scaleX: 1,
                             scaleY: 1,
                             displayWidth: happy.displayWidth * 20,
@@ -530,7 +522,6 @@
                                 win = scene.add.image(450, 400, 'win').setScale(0.5);
                             }
                         });
-
 
                         // destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
                     }
@@ -558,52 +549,57 @@
                         fullHealth.setTexture('full_health_50')
                         shook()
                     }
-                    // else if (sidebar.texture.key == 'three') {
-                    //     sidebar.setTexture('four');
-                    //     fullHealth.setTexture('full_health_25')
-                    //     shook()
-                    // }
+
                     else if (sidebar.texture.key == 'three') {
-                        sidebar.setTexture('five');
-                        fullHealth.setTexture('full_health_0')
-                        qbg.destroy()
-                        questionText.destroy()
-                        for (var i = 0; i < optionLabels.length; i++) {
-                            optionLabels[i].destroy();
-                        }
-                        optionLabels = [];
-                        player.destroy()
+                        scene.tweens.add({
+                            targets: player,
+                            x: 500,
+                            y: 600,
+                            duration: 1000,
+                            ease: 'Power1',
+                            onComplete: function () {
+                                console.log("Completed")
+                                player.destroy()
 
-                        sidebar.destroy()
-                        fullHealth.destroy()
-                        border.destroy()
-                        rec.destroy()
-
-
-
-
-                        for (const i of problems) {
-                            i.destroy()
-                        }
-                        problems = []
+                                sidebar.setTexture('five');
+                                fullHealth.setTexture('full_health_0')
+                                qbg.destroy()
+                                questionText.destroy()
+                                for (var i = 0; i < optionLabels.length; i++) {
+                                    optionLabels[i].destroy();
+                                }
+                                optionLabels = [];
 
 
-                        for (const i of wrong) {
-                            i.destroy()
-                        }
+                                sidebar.destroy()
+                                fullHealth.destroy()
+                                border.destroy()
+                                rec.destroy()
 
-                        wrong = []
+                                for (const i of problems) {
+                                    i.destroy()
+                                }
+                                problems = []
 
-                        if (right) {
-                            right.destroy()
-                        }
+                                for (const i of wrong) {
+                                    i.destroy()
+                                }
 
-                        game_over = scene.add.image(450, 400, "game_over").setScale(0.5)
-                        destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
+                                wrong = []
+
+                                if (right) {
+                                    right.destroy()
+                                }
+
+                                game_over = scene.add.image(450, 400, "game_over").setScale(0.5)
+                                destroyedplayer = scene.add.image(450, 650, "destroyedplayer").setScale(0.6)
+                            }
+                        });
+
+
                     }
                 }
             }
-
         }
 
 
