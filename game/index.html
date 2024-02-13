@@ -49,9 +49,14 @@
         function Game() {
 
 
+
             var myCustomQuestions
 
-            fetch('https://fetv2022.netservex.com/api/v1/games/ete-2009-souvenirs-de-mon-sejour-linguistique-imparfait-passe')
+            var currentUrl = window.location.href;
+            var urlParams = new URLSearchParams(currentUrl.split('?')[1]);
+            var urlParameterValue = urlParams.get('url');
+
+            fetch(`https://fetv2022.netservex.com/api/v1/games/${urlParameterValue}`)
                 .then((res) => {
                     res.json().then((rese) => {
 
@@ -160,7 +165,6 @@
                 this.load.image('play_button', 'assets/playbutton.png');
                 this.load.image('game_over', 'assets/gameover.png');
                 this.load.image('destroyedplayer', 'assets/end.png');
-                this.load.json('questions', 'data/qa.json');
                 this.load.audio('backgroundMusic', ['assets/bgmusic.mp3']);
                 this.load.audio('rightAnswer', ['assets/correct-6033.mp3']);
                 this.load.audio('wrongAnswer', ['assets/wrong-buzzer-6268.mp3']);
