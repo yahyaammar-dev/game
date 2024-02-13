@@ -39,36 +39,14 @@
 
 <body>
     <script>
+
+
+
+
+
+
+
         function Game() {
-            var myCustomQuestions
-            var currentUrl = window.location.href;
-            var urlParams = new URLSearchParams(currentUrl.split('?')[1]);
-            var urlParameterValue = urlParams.get('url');
-
-            fetch(`https://fetv2022.netservex.com/api/v1/games/${urlParameterValue}`)
-                .then((res) => {
-                    res.json().then((rese) => {
-
-                        let arr = rese.data[0].game.questions
-
-                        let convertedArr = arr.map(questionObj => {
-                            let options = questionObj.answer_list.map(answer => answer.answer);
-                            let correctOptionIndex = questionObj.answer_list.findIndex(answer => answer.correct_answer === 1);
-
-                            return {
-                                question: questionObj.question,
-                                options: options,
-                                correctOptionIndex: correctOptionIndex
-                            };
-                        });
-
-                        myCustomQuestions = convertedArr
-
-                    })
-                })
-                .catch((err) => {
-                    console.log(err)
-                })
 
             var config = {
                 type: Phaser.AUTO,
@@ -310,7 +288,7 @@
                 element.setInteractive();
             }
 
-            function checkRightAnswer(scene){
+            function checkRightAnswer(scene) {
                 let myCont = optionLabels[question.correctOptionIndex]
                 right.push(scene.add.image(myCont.x - 8, myCont.y + 20, "right").setScale(0.04))
             }
@@ -401,7 +379,7 @@
                         if (questions.length > currentQuestionIndex) {
                             displayQuestion(scene, currentQuestionIndex)
                         }
-                        for(i of right){
+                        for (i of right) {
                             i.destroy()
                         }
                         i = []
@@ -446,7 +424,7 @@
                     }
                 });
             }
-            
+
             function checkAnswer(scene, question, selectedOptionIndex, optionLabel, optionContainer) {
                 if (selectedOptionIndex === question.correctOptionIndex) {
                     if (speak) {
@@ -492,8 +470,8 @@
                             i.destroy()
                         }
                         wrong = []
-                        
-                        for(i of right){
+
+                        for (i of right) {
                             i.destroy()
                         }
 
@@ -532,11 +510,11 @@
                         sidebar.setTexture('two');
                         fullHealth.setTexture('full_health_75')
                         shook()
-                    }else if (sidebar.texture.key == 'two') {
+                    } else if (sidebar.texture.key == 'two') {
                         sidebar.setTexture('three');
                         fullHealth.setTexture('full_health_50')
                         shook()
-                    }else if (sidebar.texture.key == 'three') {
+                    } else if (sidebar.texture.key == 'three') {
                         scene.tweens.add({
                             targets: player,
                             x: 500,
@@ -566,7 +544,7 @@
                                 }
                                 wrong = []
                                 if (right) {
-                                    for(i of right){
+                                    for (i of right) {
                                         i.destroy()
                                     }
                                     right = []
@@ -582,8 +560,45 @@
             }
         }
 
-        Game()
+
+
+
+
+
+        var myCustomQuestions
+        var currentUrl = window.location.href;
+        var urlParams = new URLSearchParams(currentUrl.split('?')[1]);
+        var urlParameterValue = urlParams.get('url');
+
+        fetch(`https://fetv2022.netservex.com/api/v1/games/${urlParameterValue}`)
+            .then((res) => {
+                res.json().then((rese) => {
+
+                    let arr = rese.data[0].game.questions
+
+                    let convertedArr = arr.map(questionObj => {
+                        let options = questionObj.answer_list.map(answer => answer.answer);
+                        let correctOptionIndex = questionObj.answer_list.findIndex(answer => answer.correct_answer === 1);
+
+                        return {
+                            question: questionObj.question,
+                            options: options,
+                            correctOptionIndex: correctOptionIndex
+                        };
+                    });
+
+                    myCustomQuestions = convertedArr
+
+                    Game()
+
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
 
     </script>
 </body>
+
 </html>
