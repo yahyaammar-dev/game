@@ -32,7 +32,10 @@
               crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap"
               rel="stylesheet">
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
+
+    <script src="assets/js/phaser.min.js"></script>
+
+    <!-- <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
 
 </head>
@@ -52,15 +55,6 @@
                     // update: update
                 }
             };
-
-            WebFont.load({
-                google: {
-                    families: ['Bungee Spice', 'Play'] // Load 'Bungee Spice' font from Google Fonts
-                },
-                active: function () {
-                    // Create the game instance once the font is loaded
-                }
-            });
 
             var game = new Phaser.Game(config);
             var scene = null;
@@ -287,8 +281,8 @@
             function checkRightAnswer(scene) {
                 let myCont = optionLabels[question.correctOptionIndex];
                 right.push(scene.add.image(myCont.x - 8, myCont.y + 20, "right").setScale(0.04));
-                
-                for(const i of currentQuestionAllLabels){
+
+                for (const i of currentQuestionAllLabels) {
                     i.disableInteractive()
                 }
 
