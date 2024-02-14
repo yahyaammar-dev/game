@@ -40,12 +40,6 @@
 <body>
     <script>
 
-
-
-
-
-
-
         function Game() {
 
             var config = {
@@ -112,6 +106,8 @@
             var question
             var optionContainer
             var optionLabel
+            var currentCorrectOptionLabel
+            var currentQuestionAllLabels = []
 
             function preload() {
                 this.load.image('game_background', 'assets/mainbgg.png');
@@ -289,9 +285,20 @@
             }
 
             function checkRightAnswer(scene) {
-                let myCont = optionLabels[question.correctOptionIndex]
-                right.push(scene.add.image(myCont.x - 8, myCont.y + 20, "right").setScale(0.04))
+                let myCont = optionLabels[question.correctOptionIndex];
+                right.push(scene.add.image(myCont.x - 8, myCont.y + 20, "right").setScale(0.04));
+                
+                for(const i of currentQuestionAllLabels){
+                    i.disableInteractive()
+                }
+
+                setTimeout(() => {
+                    currentCorrectOptionLabel.emit('pointerdown', currentCorrectOptionLabel);
+                    currentCorrectOptionLabel.emit('pointerup', currentCorrectOptionLabel);
+                }, 2000);
             }
+
+
 
             function displayQuestion(scene, index) {
                 question = questions[index];
@@ -304,6 +311,8 @@
                 optionLabels = [];
                 questionText = scene.add.text(520, 420, question.question, { fontFamily: 'Play, sans-serif', fontSize: '16px', fill: '#000000' });
                 questionText.setOrigin(0.5);
+
+                currentQuestionAllLabels = []
 
                 for (var j = 0; j < question.options.length; j++) {
                     optionContainer = scene.add.container(380, 440 + j * 30);
@@ -322,6 +331,12 @@
                     optionContainer.x -= padding;
                     optionContainer.y -= padding;
                     optionLabel.on('pointerdown', checkAnswer.bind(scene, scene, question, j, optionLabel, optionContainer));
+
+                    if (j == question.correctOptionIndex) {
+                        currentCorrectOptionLabel = optionLabel
+                    }
+
+                    currentQuestionAllLabels.push(optionLabel);
 
                     (function (label, bg) {
                         label.on('pointerover', function () {
@@ -559,11 +574,6 @@
                 }
             }
         }
-
-
-
-
-
 
         var myCustomQuestions
         var currentUrl = window.location.href;
