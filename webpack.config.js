@@ -34,7 +34,7 @@ module.exports = {
       directory: path.join(__dirname, 'dist'),
     },
     compress: true,
-    disableHostCheck: true,  
+    host: '0.0.0.0',
     port: 9000,
   },
 };
